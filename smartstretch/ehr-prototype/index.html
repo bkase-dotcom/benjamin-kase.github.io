@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Stretch – WebPT Extension Concept</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="webptLogo">WebPT</div>
+      </div>
+
+      <div class="patientHeader">
+        <div class="avatar">LJ</div>
+        <div class="patientMeta">
+          <div class="nameRow">
+            <div class="patientName">Lebron James <span class="verified" aria-label="verified">✓</span></div>
+            <div class="patientId">(#092348290384)</div>
+          </div>
+          <div class="subMeta">DOB: Jan 19th, 1988</div>
+        </div>
+      </div>
+
+      <nav class="tabs" aria-label="Primary">
+        <button class="tab active">Overview</button>
+        <button class="tab">Progress</button>
+        <button class="tab">Demographics</button>
+      </nav>
+
+      <div class="topRight">
+        <button class="ghost">Content</button>
+        <button class="ghost">Patients</button>
+        <button class="ghost">Messages</button>
+        <div class="userChip" title="User">BL</div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="pageTitleRow">
+        <h1>Patient Overview</h1>
+        <button class="primary">Create New Careplan</button>
+      </div>
+
+      <section class="grid">
+        <!-- Left card -->
+        <aside class="card patientCard">
+          <div class="patientCardTop">
+            <div class="avatar xl">LJ</div>
+            <div class="patientCardName">
+              <div class="name">Lebron James <span class="verified">✓</span></div>
+              <div class="muted small">Access Code: BCV-D25EAF</div>
+              <div class="muted small">29 Years Old · Not Found</div>
+            </div>
+          </div>
+
+          <div class="patientCardStats">
+            <div class="stat">
+              <div class="muted tiny">Eval Date</div>
+              <div class="dash">—</div>
+            </div>
+            <div class="stat">
+              <div class="muted tiny">Last Login</div>
+              <div class="dash">—</div>
+            </div>
+          </div>
+
+          <button class="pill">Resend Welcome Email</button>
+
+          <!-- Smart Stretch widget (your sketch) -->
+          <div class="smartWidget" aria-label="Smart Stretch widget">
+            <div class="smartWidgetHeader">
+              <img class="ssLogo" src="assets/logo.png" alt="Smart Stretch logo" />
+              <div>
+                <div class="smartTitle">Smart Stretch</div>
+                <div class="muted tiny">Clinician quick links</div>
+              </div>
+            </div>
+
+            <div class="smartWidgetBody">
+              <div class="smartCols">
+                <div class="smartCol">
+                  <div class="muted tiny">Last exercise</div>
+                  <div class="smartValue" id="lastExerciseValue">Biceps Curl</div>
+                </div>
+                <div class="smartCol">
+                  <div class="muted tiny">Missed exercises</div>
+                  <div class="smartValue danger" id="missedExerciseValue">2</div>
+                </div>
+              </div>
+
+              <div class="smartButtons">
+                <button class="smartBtn" id="btnLinkPlan">
+                  <span class="btnIco">🔗</span>
+                  Link Plan
+                </button>
+                <button class="smartBtn" id="btnTech">
+                  <span class="btnIco">⚙️</span>
+                  Technology
+                </button>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Middle: Active care plans -->
+        <section class="card carePlans">
+          <div class="cardHeader">
+            <h2>Active Care Plans <span class="pillCount">(4)</span></h2>
+          </div>
+
+          <div class="planGroup">
+            <div class="planRow" role="button" tabindex="0" aria-expanded="false" data-date="2017-12-19">
+              <div class="planLeft">
+                <span class="chev" aria-hidden="true">▸</span>
+                <div>
+                  <div class="planTitle">Tuesday, December 19th 2026</div>
+                  <div class="muted tiny">Last Updated: 9 days ago · Phase 1 (Activated on 12/19/2017)</div>
+                </div>
+              </div>
+              <div class="planRight">
+                <img class="ssTinyLogo" src="assets/logo.png" alt="Smart Stretch" />
+                <button class="planIconBtn" type="button" aria-label="Edit plan">✎</button>
+                <button class="planIconBtn" type="button" aria-label="Print plan">🖨</button>
+                <button class="planIconBtn" type="button" aria-label="More options">⋯</button>
+              </div>
+            </div>
+
+            <div class="exerciseStrip" role="list">
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="clamshells" data-smart="1" aria-label="Clamshells (Smart Stretch)">
+                <div class="thumb thumb-a"></div>
+                <div class="exMeta">
+                  <div class="exName">Clamshells</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">10 reps</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="bridges" data-smart="1" aria-label="Bridges (Smart Stretch)">
+                <div class="thumb thumb-b"></div>
+                <div class="exMeta">
+                  <div class="exName">Bridges</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">12 reps</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="rows" data-smart="0" aria-label="Rows (non-sensor)">
+                <div class="thumb thumb-c"></div>
+                <div class="exMeta">
+                  <div class="exName">Rows</div>
+                  <div class="exBadges">
+                    <span class="badge">Video</span>
+                    <span class="badge">8 reps</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="slr" data-smart="1" aria-label="Straight Leg Raise (Smart Stretch)">
+                <div class="thumb thumb-d"></div>
+                <div class="exMeta">
+                  <div class="exName">Straight Leg Raise</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">10 reps</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="planList">
+            <div class="planRow" role="button" tabindex="0" aria-expanded="false" data-date="2017-12-18">
+              <div class="planLeft">
+                <span class="chev" aria-hidden="true">▸</span>
+                <div class="planMeta">
+                  <div class="muted">Monday, December 18th 2026</div>
+                  <div class="muted tiny">Last Updated: 10 days ago</div>
+                </div>
+              </div>
+              <div class="planRight" aria-label="Plan actions">
+                <img class="ssTinyLogo" src="assets/logo.png" alt="Smart Stretch" />
+                <button class="planIconBtn" type="button" aria-label="Edit plan">✎</button>
+                <button class="planIconBtn" type="button" aria-label="Print plan">🖨</button>
+                <button class="planIconBtn" type="button" aria-label="More options">⋯</button>
+              </div>
+            </div>
+            <div class="exerciseStrip" role="list">
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="clamshells" data-smart="1" aria-label="Clamshells (Smart Stretch)">
+                <div class="thumb thumb-a"></div>
+                <div class="exMeta">
+                  <div class="exName">Clamshells</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">10 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="bridges" data-smart="1" aria-label="Bridges (Smart Stretch)">
+                <div class="thumb thumb-b"></div>
+                <div class="exMeta">
+                  <div class="exName">Bridges</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">12 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="rows" data-smart="0" aria-label="Rows (non-sensor)">
+                <div class="thumb thumb-c"></div>
+                <div class="exMeta">
+                  <div class="exName">Rows</div>
+                  <div class="exBadges">
+                    <span class="badge">Video</span>
+                    <span class="badge">8 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="slr" data-smart="1" aria-label="Straight Leg Raise (Smart Stretch)">
+                <div class="thumb thumb-d"></div>
+                <div class="exMeta">
+                  <div class="exName">Straight Leg Raise</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">10 reps</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+            <div class="planRow" role="button" tabindex="0" aria-expanded="false" data-date="2017-12-12">
+              <div class="planLeft">
+                <span class="chev" aria-hidden="true">▸</span>
+                <div class="planMeta">
+                  <div class="muted">Tuesday, December 12th 2026</div>
+                  <div class="muted tiny">Last Updated: 16 days ago</div>
+                </div>
+              </div>
+              <div class="planRight" aria-label="Plan actions">
+                <img class="ssTinyLogo" src="assets/logo.png" alt="Smart Stretch" />
+                <button class="planIconBtn" type="button" aria-label="Edit plan">✎</button>
+                <button class="planIconBtn" type="button" aria-label="Print plan">🖨</button>
+                <button class="planIconBtn" type="button" aria-label="More options">⋯</button>
+              </div>
+            </div>
+            <div class="exerciseStrip" role="list">
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="clamshells" data-smart="1" aria-label="Clamshells (Smart Stretch)">
+                <div class="thumb thumb-a"></div>
+                <div class="exMeta">
+                  <div class="exName">Clamshells</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">10 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="bridges" data-smart="1" aria-label="Bridges (Smart Stretch)">
+                <div class="thumb thumb-b"></div>
+                <div class="exMeta">
+                  <div class="exName">Bridges</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">12 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="rows" data-smart="0" aria-label="Rows (non-sensor)">
+                <div class="thumb thumb-c"></div>
+                <div class="exMeta">
+                  <div class="exName">Rows</div>
+                  <div class="exBadges">
+                    <span class="badge">Video</span>
+                    <span class="badge">8 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="slr" data-smart="1" aria-label="Straight Leg Raise (Smart Stretch)">
+                <div class="thumb thumb-d"></div>
+                <div class="exMeta">
+                  <div class="exName">Straight Leg Raise</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">10 reps</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+            <div class="planRow" role="button" tabindex="0" aria-expanded="false" data-date="2017-12-06">
+              <div class="planLeft">
+                <span class="chev" aria-hidden="true">▸</span>
+                <div class="planMeta">
+                  <div class="muted">Wednesday, December 6th 2026</div>
+                  <div class="muted tiny">Last Updated: 22 days ago</div>
+                </div>
+              </div>
+              <div class="planRight" aria-label="Plan actions">
+                <img class="ssTinyLogo" src="assets/logo.png" alt="Smart Stretch" />
+                <button class="planIconBtn" type="button" aria-label="Edit plan">✎</button>
+                <button class="planIconBtn" type="button" aria-label="Print plan">🖨</button>
+                <button class="planIconBtn" type="button" aria-label="More options">⋯</button>
+              </div>
+            </div>
+            <div class="exerciseStrip" role="list">
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="clamshells" data-smart="1" aria-label="Clamshells (Smart Stretch)">
+                <div class="thumb thumb-a"></div>
+                <div class="exMeta">
+                  <div class="exName">Clamshells</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">10 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="bridges" data-smart="1" aria-label="Bridges (Smart Stretch)">
+                <div class="thumb thumb-b"></div>
+                <div class="exMeta">
+                  <div class="exName">Bridges</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">12 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="rows" data-smart="0" aria-label="Rows (non-sensor)">
+                <div class="thumb thumb-c"></div>
+                <div class="exMeta">
+                  <div class="exName">Rows</div>
+                  <div class="exBadges">
+                    <span class="badge">Video</span>
+                    <span class="badge">8 reps</span>
+                  </div>
+                </div>
+              </article>
+              <article class="exerciseCard" role="button" tabindex="0" data-exercise="slr" data-smart="1" aria-label="Straight Leg Raise (Smart Stretch)">
+                <div class="thumb thumb-d"></div>
+                <div class="exMeta">
+                  <div class="exName">Straight Leg Raise</div>
+                  <div class="exBadges">
+                    <span class="badge smart">Smart Stretch</span>
+                    <span class="badge">10 reps</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right: Patient Activities -->
+        <aside class="card activities">
+          <div class="cardHeader">
+            <h2>Patient Activities</h2>
+            <div class="muted tiny">2 months ago</div>
+          </div>
+
+          <ul class="activityList">
+            <li class="activity"><span class="dotIco">✓</span><div><div class="activityTitle">Completed Workout</div><div class="muted tiny">Oct 18th · 11:55 am</div></div></li>
+            <li class="activity"><span class="dotIco">✓</span><div><div class="activityTitle">Completed Task: Straight Leg Raise (SLR)</div><div class="muted tiny">Oct 18th · 11:55 am</div></div></li>
+            <li class="activity smart"><img class="activityLogo" src="assets/logo.png" alt="Smart Stretch" /><div><div class="activityTitle">Exercise Captured: Clamshells</div><div class="muted tiny">Oct 17th · 6:14 pm</div></div></li>
+            <li class="activity"><span class="dotIco">✓</span><div><div class="activityTitle">Completed Task: Rows</div><div class="muted tiny">Oct 18th · 11:55 am</div></div></li>
+            <li class="activity"><span class="dotIco">✓</span><div><div class="activityTitle">Completed Task: Bridges</div><div class="muted tiny">Oct 18th · 11:55 am</div></div></li>
+            <li class="activity smart"><img class="activityLogo" src="assets/logo.png" alt="Smart Stretch" /><div><div class="activityTitle">Exercise Captured: Straight Leg Raise</div><div class="muted tiny">Oct 16th · 8:02 am</div></div></li>
+            <li class="activity"><span class="dotIco">✓</span><div><div class="activityTitle">Completed Task: Sidelying Clam</div><div class="muted tiny">Oct 18th · 11:55 am</div></div></li>
+            <li class="activity warn"><span class="dotIco">!</span><div><div class="activityTitle">Skipped Task: Bridges</div><div class="muted tiny">Oct 11th · 11:55 am</div></div></li>
+            <li class="activity"><span class="dotIco">👁</span><div><div class="activityTitle">Viewed Task: Bridges</div><div class="muted tiny">Oct 8th · 11:55 am</div></div></li>
+            <li class="activity smart"><img class="activityLogo" src="assets/logo.png" alt="Smart Stretch" /><div><div class="activityTitle">Exercise Captured: Bridges</div><div class="muted tiny">Oct 7th · 4:41 pm</div></div></li>
+          </ul>
+        </aside>
+      </section>
+    </main>
+
+    <!-- Modal -->
+    <div class="modalBackdrop" id="modalBackdrop" hidden></div>
+    <div class="modal" id="smartModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+      <div class="modalHeader">
+        <div>
+          <div class="modalEyebrow">Smart Stretch • Sensor-assisted exercise</div>
+          <h3 id="modalTitle">Exercise</h3>
+          <div class="muted tiny" id="modalSub">Session summary</div>
+        </div>
+        <div class="modalHeaderActions">
+          <button class="chip" id="toggleRaw" aria-pressed="false">View raw data</button>
+          <button class="chip danger" id="closeModal">Close</button>
+        </div>
+      </div>
+
+      <div class="modalBody">
+        <section class="kpis" aria-label="Key metrics">
+          <div class="kpi">
+            <div class="kpiLabel">Form score</div>
+            <div class="kpiValue" id="kpiForm">Good</div>
+            <div class="kpiHint" id="kpiFormHint">Stable reps, low variance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpiLabel">ROM peak</div>
+            <div class="kpiValue"><span id="kpiRom">—</span><span class="unit">°</span></div>
+            <div class="kpiHint">Angle over time (derived)</div>
+          </div>
+          <div class="kpi">
+            <div class="kpiLabel">Time in flexion</div>
+            <div class="kpiValue"><span id="kpiFlex">—</span><span class="unit">%</span></div>
+            <div class="kpiHint">Flexion vs extension split</div>
+          </div>
+          <div class="kpi">
+            <div class="kpiLabel">Muscle firing</div>
+            <div class="kpiValue"><span id="kpiFires">—</span><span class="unit">events</span></div>
+            <div class="kpiHint">sEMG threshold crossings</div>
+          </div>
+        </section>
+
+        <section class="panels">
+          <div class="panel">
+            <div class="panelHeader">
+              <div>
+                <div class="panelTitle">Angle over time (ROM)</div>
+                <div class="muted tiny">Rep overlays + average</div>
+              </div>
+              <div class="panelActions">
+                <button class="mini" data-view="overlay">Overlay</button>
+                <button class="mini" data-view="trend">Trend</button>
+              </div>
+            </div>
+            <div class="chartNav" role="group" aria-label="ROM rep navigation">
+              <button class="repNav" data-dir="-1" type="button" aria-label="Previous rep (ROM)">‹</button>
+              <canvas id="romChart" width="760" height="240" aria-label="ROM chart"></canvas>
+              <button class="repNav" data-dir="1" type="button" aria-label="Next rep (ROM)">›</button>
+            </div>
+            <div class="chartLegend" id="romLegend"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panelHeader">
+              <div>
+                <div class="panelTitle">Muscle firing timeline (sEMG)</div>
+                <div class="muted tiny">Events aligned to movement</div>
+              </div>
+              <div class="panelActions">
+                <span class="badge smart">2 sensors</span>
+              </div>
+            </div>
+            <div class="chartNav" role="group" aria-label="sEMG rep navigation">
+              <button class="repNav" data-dir="-1" type="button" aria-label="Previous rep (sEMG)">‹</button>
+              <canvas id="emgChart" width="760" height="240" aria-label="sEMG chart"></canvas>
+              <button class="repNav" data-dir="1" type="button" aria-label="Next rep (sEMG)">›</button>
+            </div>
+            <div class="chartLegend" id="emgLegend"></div>
+          </div>
+
+          <div class="panel" id="rawPanel" hidden>
+            <div class="panelHeader">
+              <div>
+                <div class="panelTitle">Raw data</div>
+                <div class="muted tiny">Angle (°) + EMG (a.u.) per sensor</div>
+              </div>
+              <div class="panelActions">
+                <button class="mini" id="downloadCsv">Download CSV</button>
+              </div>
+            </div>
+
+            <div class="rawGrid">
+              <div class="rawTableWrap">
+                <table class="rawTable" id="rawTable">
+                  <thead>
+                    <tr>
+                      <th>t (s)</th>
+                      <th>Angle A (°)</th>
+                      <th>Angle B (°)</th>
+                      <th>EMG A</th>
+                      <th>EMG B</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+              <div class="rawHint">
+                <div class="rawHintTitle">Why show raw?</div>
+                <p class="muted small">
+                  Most of the time, PTs want concise, comparable metrics. But when something looks “off,” they can inspect the signal:
+                  noisy motion artifacts, inconsistent reps, delayed firing, or compensation patterns.
+                </p>
+                <div class="callout">
+                  <div class="calloutTitle">Note</div>
+                  <div class="muted small">All values are simulated for this prototype (AI synthesis not implemented).</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="docHelper" aria-label="Documentation helper">
+          <div class="docHeader">
+            <div>
+              <div class="docTitle">Documentation helper (SOAP-ready)</div>
+              <div class="muted tiny">Copy into note (concept)</div>
+            </div>
+            <button class="chip" id="copyNote">Copy</button>
+          </div>
+          <textarea id="soapText" rows="4" spellcheck="false"></textarea>
+        </section>
+      </div>
+    </div>
+
+    <footer class="fabWrap">
+      <button class="fab" title="Help / chat">
+        <span class="fabDot">≡</span>
+      </button>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

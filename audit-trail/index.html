@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Trail — Benjamin Kase</title>
+  <meta name="description" content="A financial traceability tool for LA homelessness spending — from secondary research to interactive prototype.">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <style>
+    /* ── Page header split ── */
+    .page-header-split {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+    }
+    .page-header-text {
+      flex: 1;
+      min-width: 0;
+    }
+    .page-header-logo {
+      flex-shrink: 0;
+    }
+    .page-header-logo img {
+      width: 120px;
+      height: 120px;
+      border-radius: 28px;
+      object-fit: cover;
+    }
+
+    /* ── Icons ── */
+    .icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+    .icon-sm {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ── Icon cards ── */
+    .icon-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 24px;
+    }
+    .icon-card .icon {
+      margin-top: 2px;
+      opacity: 0.7;
+    }
+    .icon-card h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .icon-card p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── Launch button ── */
+    .launch-btn {
+      display: inline-block;
+      padding: 12px 28px;
+      font-weight: 500;
+      font-size: 0.9375rem;
+      margin-top: 16px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .launch-btn:hover {
+      background: var(--surface-hover);
+      transform: translateY(-1px);
+      opacity: 1;
+    }
+
+    /* ── Figma / Notion embeds ── */
+    .embed-block {
+      margin: 32px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+    }
+    .embed-block iframe {
+      display: block;
+      width: 100%;
+      border: none;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* ── Data chain (horizontal flow) ── */
+    .data-chain {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 32px 0;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .chain-node {
+      flex-shrink: 0;
+      text-align: center;
+      padding: 20px 16px;
+      min-width: 120px;
+    }
+    .chain-node .icon {
+      margin: 0 auto 8px;
+      opacity: 0.6;
+    }
+    .chain-node h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .chain-node p {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      line-height: 1.35;
+    }
+    .chain-arrow {
+      flex-shrink: 0;
+      color: var(--text-tertiary);
+      font-size: 1.25rem;
+      padding: 0 4px;
+    }
+
+    /* ── Screen grid (seamless) ── */
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 20px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .screen-cell {
+      padding: 24px 20px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+    .screen-cell .icon {
+      opacity: 0.5;
+    }
+    .screen-cell h4 {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-primary);
+    }
+    .screen-cell p {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+    .screen-cell .badge {
+      display: inline-block;
+      font-size: 0.625rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .badge-red { background: rgba(255, 69, 58, 0.15); color: #ff6961; }
+    .badge-green { background: rgba(48, 209, 88, 0.15); color: #30d158; }
+    .badge-blue { background: rgba(110, 182, 255, 0.15); color: #6eb6ff; }
+
+    /* ── Findings timeline ── */
+    .findings {
+      position: relative;
+      margin: 32px 0;
+      padding-left: 48px;
+    }
+    .findings::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(
+        to bottom,
+        #ff453a 0%,
+        #ff9f0a 25%,
+        #ffd60a 50%,
+        #30d158 75%,
+        #6eb6ff 100%
+      );
+      border-radius: 1px;
+    }
+    .finding-node {
+      position: relative;
+      margin-bottom: 32px;
+    }
+    .finding-node:last-child { margin-bottom: 0; }
+    .finding-dot {
+      position: absolute;
+      left: -40px;
+      top: 4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .finding-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .finding-node h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .finding-node p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .finding-node .source-tag {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    /* Finding colors */
+    .finding--la .finding-dot { color: #ff453a; }
+    .finding--la .source-tag { background: rgba(255, 69, 58, 0.15); color: #ff6961; }
+    .finding--ca .finding-dot { color: #ff9f0a; }
+    .finding--ca .source-tag { background: rgba(255, 159, 10, 0.15); color: #ffb340; }
+    .finding--sj .finding-dot { color: #ffd60a; }
+    .finding--sj .source-tag { background: rgba(255, 214, 10, 0.15); color: #ffd60a; }
+    .finding--houston .finding-dot { color: #30d158; }
+    .finding--houston .source-tag { background: rgba(48, 209, 88, 0.15); color: #30d158; }
+    .finding--finland .finding-dot { color: #6eb6ff; }
+    .finding--finland .source-tag { background: rgba(110, 182, 255, 0.15); color: #6eb6ff; }
+
+    /* ── Compare pair ── */
+    .compare-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 24px 0;
+    }
+    .compare-block {
+      padding: 28px 24px;
+    }
+    .compare-block h4 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .compare-block h4 .icon-sm { opacity: 0.5; }
+    .compare-block p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .page-header-split { flex-direction: column-reverse; gap: 24px; align-items: flex-start; }
+      .page-header-logo img { width: 100px; height: 100px; border-radius: 24px; }
+      .screen-grid { grid-template-columns: 1fr 1fr; }
+      .compare-pair { grid-template-columns: 1fr; }
+      .data-chain { flex-wrap: wrap; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .screen-grid { grid-template-columns: 1fr; }
+      .findings { padding-left: 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════ SVG Icon Defs (hidden) ═══════════ -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <!-- Dashboard / Grid -->
+    <symbol id="i-dashboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+    </symbol>
+    <!-- Dollar / Budget -->
+    <symbol id="i-dollar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+    </symbol>
+    <!-- File / Contract -->
+    <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>
+    </symbol>
+    <!-- Credit card / Transaction -->
+    <symbol id="i-transaction" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+    </symbol>
+    <!-- Paperclip / Evidence -->
+    <symbol id="i-evidence" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+    </symbol>
+    <!-- Check circle / Outcome -->
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+    </symbol>
+    <!-- Clock / Audit log -->
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+    </symbol>
+    <!-- Eye / Public -->
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <!-- Search / Research -->
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </symbol>
+    <!-- Alert / Problem -->
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+    </symbol>
+    <!-- Shield / Trust -->
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2l8 4v6c0 5.25-3.5 9.74-8 11-4.5-1.26-8-5.75-8-11V6l8-4z"/>
+    </symbol>
+    <!-- Map / Stakeholder -->
+    <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/>
+    </symbol>
+    <!-- Arrow right -->
+    <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+    </symbol>
+    <!-- Chart -->
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 5-9"/>
+    </symbol>
+    <!-- Download / Export -->
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+    </symbol>
+  </svg>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="/" class="nav-logo">Benjamin Kase</a>
+      <ul class="nav-links">
+        <li><a href="/">Work</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <a href="/" class="back-link">← Back to Work</a>
+      <div class="page-header-split">
+        <div class="page-header-text">
+          <h1>Audit Trail</h1>
+          <p class="page-desc">A financial traceability tool for LA homelessness spending — from secondary research into systemic accountability failures, to an interactive prototype that makes every dollar traceable from budget allocation to verified outcome. Course project for GIXD-502 at ArtCenter College of Design.</p>
+        </div>
+        <div class="page-header-logo">
+          <img src="app/assets/logo.png" alt="Audit Trail logo" width="120" height="120">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="section">
+    <div class="container">
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="research">Research</button>
+        <button class="tab-btn" data-tab="prototype">Prototype</button>
+        <button class="tab-btn" data-tab="argument">Design Argument</button>
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- ── Research Tab ────────────────── -->
+      <!-- ══════════════════════════════════ -->
+      <div class="tab-panel active" id="research">
+
+        <div class="content-block">
+          <h2>The Problem</h2>
+          <p>Los Angeles has spent billions on homelessness services with virtually no financial oversight. The problem isn't a lack of solutions — it's a lack of accountability infrastructure. Through desk research across audits, policy reports, and comparative case studies, a clear pattern emerged: data existed at every stage of the spending lifecycle, but no tool connected these stages into a traceable chain.</p>
+        </div>
+
+        <div class="content-block">
+          <h2>The Reframe</h2>
+          <p>Transparency in this domain doesn't mean publishing reports and budgets. It means making spending <strong>traceable, verifiable, and legible</strong> throughout its entire lifecycle. Information existed in LA — it was just functionally unusable.</p>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Key Findings</h2>
+        </div>
+
+        <div class="findings">
+          <div class="finding-node finding--la">
+            <div class="finding-dot"></div>
+            <span class="source-tag">LA Court-Ordered Audit</span>
+            <h4>$2.4B with No Financial Oversight</h4>
+            <p>A court-ordered audit revealed LA spent $2.4 billion on homelessness services — auditors couldn't trace where the money went. LAHSA had no unified data system and in some cases didn't know who it was paying or what for.</p>
+          </div>
+
+          <div class="finding-node finding--ca">
+            <div class="finding-dot"></div>
+            <span class="source-tag">California State Audit</span>
+            <h4>30+ Programs, Zero Outcome Tracking</h4>
+            <p>Nine state agencies running 30+ programs with no outcome tracking, making it impossible to determine which programs worked and which didn't.</p>
+          </div>
+
+          <div class="finding-node finding--sj">
+            <div class="finding-dot"></div>
+            <span class="source-tag">San Jose 2025 Audit</span>
+            <h4>Missed Targets Without Consequence</h4>
+            <p>San Jose's audit revealed identical failures — service providers missed performance targets without consequence, replicating the same systemic pattern.</p>
+          </div>
+
+          <div class="finding-node finding--houston">
+            <div class="finding-dot"></div>
+            <span class="source-tag">Houston — Success Case</span>
+            <h4>55% Reduction Over a Decade</h4>
+            <p>Houston achieved a 55% reduction in homelessness through coordination, sustained funding, and trusted data systems. Accountability infrastructure was the common thread.</p>
+          </div>
+
+          <div class="finding-node finding--finland">
+            <div class="finding-dot"></div>
+            <span class="source-tag">Finland — Success Case</span>
+            <h4>Near-Elimination of Chronic Homelessness</h4>
+            <p>Finland's Housing First model nearly eliminated chronic homelessness. Like Houston, the success was built on coordination and credible data — political will sustained by public trust.</p>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Stakeholder Map</h2>
+          <p>Research mapped the ecosystem of actors, funding flows, and accountability gaps across LA's homelessness response infrastructure.</p>
+        </div>
+
+        <div class="embed-block">
+          <iframe style="height: 450px;" src="https://embed.figma.com/design/l6wBXbZvhFid7wAHoi5El1/Homelessness-in-LA?node-id=12-117&embed-host=share" allowfullscreen></iframe>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Full Research Documentation</h2>
+          <p>Complete secondary research — sources, analysis, and synthesis — documented in Notion.</p>
+          <a href="https://temporal-vulture-e87.notion.site/ebd//2abf1b96250880cd9953c32e92e90786" target="_blank" rel="noopener" class="launch-btn glass" style="margin-top: 16px;">View Research in Notion →</a>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- ── Prototype Tab ───────────────── -->
+      <!-- ══════════════════════════════════ -->
+      <div class="tab-panel" id="prototype">
+
+        <div class="content-block">
+          <h2>The Intervention</h2>
+          <p>Audit Trail is a lo-fi interactive prototype of a financial traceability tool designed for LAHSA analysts, program managers, and oversight bodies. It creates a structured data chain where every link is explicit and verification status is visible in real time.</p>
+        </div>
+
+        <div class="content-block">
+          <h2>Data Chain</h2>
+          <p>Every dollar follows an explicit, auditable path:</p>
+        </div>
+
+        <div class="data-chain">
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-dollar"/></svg>
+            <h4>Budget</h4>
+            <p>Fiscal year<br>allocation</p>
+          </div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-chart"/></svg>
+            <h4>Program</h4>
+            <p>Service area<br>assignment</p>
+          </div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-file"/></svg>
+            <h4>Contract</h4>
+            <p>Vendor<br>agreement</p>
+          </div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-transaction"/></svg>
+            <h4>Transaction</h4>
+            <p>Individual<br>disbursement</p>
+          </div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-evidence"/></svg>
+            <h4>Evidence</h4>
+            <p>Invoice, metric,<br>field note</p>
+          </div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-check"/></svg>
+            <h4>Outcome</h4>
+            <p>Verified<br>result</p>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <a href="app/" class="launch-btn glass">Launch Working Prototype →</a>
+          <p style="color: var(--accent); font-size: 0.8125rem; margin-top: 12px;"><em>Interactive HTML/CSS/JS prototype with simulated LAHSA data. All values are simulated.</em></p>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Seven Functional Screens</h2>
+          <p>Each screen serves a specific role in the traceability chain. The core design decision: <span class="badge badge-red">Missing</span> vs <span class="badge badge-green">Verified</span> status makes gaps visible immediately — not discoverable years later in a formal audit.</p>
+        </div>
+
+        <div class="screen-grid">
+          <div class="screen-cell">
+            <svg class="icon"><use href="#i-dashboard"/></svg>
+            <h4>Dashboard</h4>
+            <p>KPI overview: total budget, spent to date, unverified spend flagged in red. Program spend chart. Live activity feed.</p>
+          </div>
+          <div class="screen-cell">
+            <svg class="icon"><use href="#i-dollar"/></svg>
+            <h4>Budgets</h4>
+            <p>Drill-down by fiscal year and program. Allocated vs. spent vs. remaining. Contracts within each program.</p>
+          </div>
+          <div class="screen-cell">
+            <svg class="icon"><use href="#i-file"/></svg>
+            <h4>Contracts</h4>
+            <p>Full contract table with vendor, program, cap, spend, and status. Click-through to transaction detail.</p>
+          </div>
+          <div class="screen-cell">
+            <svg class="icon"><use href="#i-transaction"/></svg>
+            <h4>Transactions</h4>
+            <p>Complete spend log with <span class="badge badge-green">Verified</span> / <span class="badge badge-red">Missing</span> evidence badges. Filterable. CSV export.</p>
+          </div>
+          <div class="screen-cell">
+            <svg class="icon"><use href="#i-evidence"/></svg>
+            <h4>Evidence</h4>
+            <p>Document attachment — invoices, outcome metrics, photos, field notes linked to individual transactions.</p>
+          </div>
+          <div class="screen-cell">
+            <svg class="icon"><use href="#i-clock"/></svg>
+            <h4>Audit Log</h4>
+            <p>Immutable trace of who changed what, when, and why. Full accountability chain for every data modification.</p>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 24px;">
+          <div class="screen-grid" style="grid-template-columns: 1fr;">
+            <div class="screen-cell">
+              <svg class="icon"><use href="#i-eye"/></svg>
+              <h4>Public View</h4>
+              <p>Simplified trust layer — verified spend totals, verification rate, and plain-language program summaries. Designed for external audiences: taxpayers, journalists, advocates. <span class="badge badge-blue">External</span></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- ── Design Argument Tab ─────────── -->
+      <!-- ══════════════════════════════════ -->
+      <div class="tab-panel" id="argument">
+
+        <div class="content-block">
+          <h2>Infrastructure for Trust</h2>
+          <p>Audit Trail is infrastructure for trust, not just compliance. The research showed that public trust in homelessness spending is a <strong>prerequisite</strong> for the political will to sustain and expand funding. Publishing a PDF report is not transparency if no one can follow the numbers through the system.</p>
+        </div>
+
+        <div class="compare-pair">
+          <div class="compare-block glass">
+            <h4><svg class="icon-sm"><use href="#i-alert"/></svg> Current State</h4>
+            <p>Data exists at each stage of the spending lifecycle, but no tool connects these stages. Accountability is reactive — discovered years later through formal audits. Gaps are invisible until someone goes looking.</p>
+          </div>
+          <div class="compare-block glass">
+            <h4><svg class="icon-sm"><use href="#i-shield"/></svg> Audit Trail Model</h4>
+            <p>Every link in the chain is explicit. Verification status is visible in real time. Gaps surface immediately — not as audit findings, but as red badges in the daily workflow of analysts and managers.</p>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>The Trust → Funding Loop</h2>
+          <p>Houston and Finland both succeeded in part because their data systems were credible. Audit Trail proposes that the same logic applies to LA:</p>
+        </div>
+
+        <div class="data-chain" style="justify-content: center;">
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-check"/></svg>
+            <h4>Verified Outcomes</h4>
+            <p>Traceable<br>evidence</p>
+          </div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-shield"/></svg>
+            <h4>Public Legitimacy</h4>
+            <p>Trust in<br>the system</p>
+          </div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-dollar"/></svg>
+            <h4>Sustained Funding</h4>
+            <p>Political will<br>to invest</p>
+          </div>
+          <span class="chain-arrow">→</span>
+          <div class="chain-node">
+            <svg class="icon"><use href="#i-chart"/></svg>
+            <h4>Scale</h4>
+            <p>Expanded<br>programs</p>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>For Three Audiences</h2>
+        </div>
+
+        <div class="detail-grid">
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-search"/></svg>
+            <div>
+              <h4>LAHSA Analysts</h4>
+              <p>Trace spending anomalies through the full lifecycle — from budget allocation to contract to expenditure — with linked source data at each node. Surface unverified transactions before they become audit findings.</p>
+            </div>
+          </div>
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-file"/></svg>
+            <div>
+              <h4>Program Managers</h4>
+              <p>Monitor contract performance and evidence submission in real time. Missing evidence surfaces immediately, not months later. Vendor accountability is built into the daily workflow.</p>
+            </div>
+          </div>
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-eye"/></svg>
+            <div>
+              <h4>The Public</h4>
+              <p>Simplified trust layer — verified spend, verification rates, and plain-language summaries. Taxpayers, journalists, and advocates can independently assess whether money is being spent accountably.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Core Design Decision</h2>
+          <p>The <span class="badge badge-red">Missing</span> vs <span class="badge badge-green">Verified</span> state is the fundamental design choice. Traditional systems assume evidence exists until proven otherwise. Audit Trail inverts this — every transaction starts as unverified, and the default view makes gaps visible. This shifts accountability from reactive (audits) to proactive (daily operations).</p>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Benjamin Kase · 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

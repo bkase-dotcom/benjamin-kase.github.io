@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Benjamin Kase</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <style>
+    .about-hero {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Headshot peephole (clear, no blur) ── */
+    .headshot-wrap {
+      flex-shrink: 0;
+      width: 200px;
+      height: 200px;
+      min-width: 200px;
+      min-height: 200px;
+      position: relative;
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 3px rgba(255,255,255,0.10),
+        0 0 0 6px rgba(255,255,255,0.04),
+        0 6px 20px rgba(0,0,0,0.4);
+    }
+    .headshot-peephole {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      clip-path: circle(50%);
+      -webkit-clip-path: circle(50%);
+      isolation: isolate;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+    .headshot-peephole img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      display: block;
+    }
+    /* Glass overlay — specular caustics + vignette, NO blur on image */
+    .headshot-peephole::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse 60% 50% at 32% 28%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.04) 40%, transparent 70%),
+        radial-gradient(ellipse 40% 35% at 70% 72%, rgba(255,255,255,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.12) 58%, rgba(0,0,0,0.30) 75%, rgba(0,0,0,0.55) 100%);
+      box-shadow:
+        inset 0 0 20px rgba(0,0,0,0.35),
+        inset 0 1px 3px rgba(255,255,255,0.15),
+        inset 0 -1px 2px rgba(255,255,255,0.05);
+      pointer-events: none;
+    }
+    .headshot-peephole::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.10);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .about-intro h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .about-intro .role {
+      font-size: 1.0625rem;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 0;
+    }
+
+    .about-body p {
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .about-hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 32px;
+      }
+      .headshot-wrap {
+        width: 160px;
+        height: 160px;
+        min-width: 160px;
+        min-height: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="/" class="nav-logo">Benjamin Kase</a>
+      <ul class="nav-links">
+        <li><a href="/">Work</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+
+      <div class="about-hero">
+        <div class="headshot-wrap">
+          <div class="headshot-peephole">
+            <img src="assets/headshot.jpeg" alt="Benjamin Kase headshot" width="200" height="200">
+          </div>
+        </div>
+        <div class="about-intro">
+          <h1>Benjamin Kase</h1>
+          <p class="role">Materials Engineer & Interaction Designer</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <main class="section" style="padding-top: 0;">
+    <div class="container" style="max-width: 680px;">
+
+      <div class="content-block about-body">
+        <p>I am a materials engineer and designer passionate about creating products where human-centered design meets material innovation. With a background in engineering, product development, and hands-on prototyping, I focus on not just inventing products, but crafting the experiences people have with them. My work explores the intersections of interaction, form, and function, blending rigorous engineering analysis with user-centered creativity.</p>
+        <p>At the core of my design philosophy is the belief that great products emerge from the dialogue between technical possibility and human need. I approach design as an iterative process — testing, refining, and adapting ideas to strike a balance between performance, usability, and aesthetics. Every concept I develop is guided by the principle that technology should not only work well, but also feel intuitive and engaging in the hands of the user. By combining material science insight with empathetic design thinking, I aim to create solutions that feel natural, enhance everyday life, and open the door to new ways of experiencing the world.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Benjamin Kase · 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>

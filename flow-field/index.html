@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flow Field — Benjamin Kase</title>
+  <meta name="description" content="Real-time generative system with curl noise, vortex dynamics, and ~8,000 particles.">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="/" class="nav-logo">Benjamin Kase</a>
+      <ul class="nav-links">
+        <li><a href="/">Work</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <a href="/" class="back-link">← Back to Work</a>
+      <h1>Flow Field</h1>
+      <p class="page-desc">A real-time generative system built with P5.js — curl noise and vortex dynamics driving ~8,000 particles, with color mapped to radius of curvature. Performance optimized with flat coordinate arrays and sub-stepping.</p>
+    </div>
+  </div>
+
+  <main class="section">
+    <div class="container">
+
+      <div class="content-block">
+        <h2>The System</h2>
+        <p>A 2D vector field computed from curl noise determines particle trajectories. Vortex points inject rotational energy, creating emergent flow structures. Each particle's color is derived from its local radius of curvature — tight turns produce warm colors, gentle arcs produce cool tones — making the field's mathematical structure directly visible.</p>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-card glass">
+          <h4>Curl Noise</h4>
+          <p>Divergence-free noise field ensures smooth, continuous flow without sources or sinks. Particles follow streamlines that never converge to a point, preventing clustering artifacts.</p>
+        </div>
+        <div class="detail-card glass">
+          <h4>Vortex System</h4>
+          <p>Dynamic vortex points with configurable strength and falloff radius. Vortices can be added, moved, and decayed over time, creating evolving flow topologies.</p>
+        </div>
+        <div class="detail-card glass">
+          <h4>Color Mapping</h4>
+          <p>Each particle computes its instantaneous radius of curvature from consecutive position samples. This scalar value maps to a color palette — making the invisible geometry of the flow field perceptually legible.</p>
+        </div>
+        <div class="detail-card glass">
+          <h4>Multiple Palettes</h4>
+          <p>Switchable color palettes allow different aesthetic treatments of the same underlying data. Each palette is designed to preserve perceptual ordering so curvature relationships remain readable.</p>
+        </div>
+      </div>
+
+      <div class="content-block" style="margin-top: 48px;">
+        <h2>Performance</h2>
+        <p>Rendering ~8,000 particles at 60fps requires careful optimization. Particle positions are stored in flat Float32Arrays rather than object arrays, eliminating garbage collection pressure. Physics simulation uses sub-stepping — multiple small integration steps per frame — to maintain stability at high particle velocities without reducing visual frame rate.</p>
+      </div>
+
+      <div class="content-block">
+        <h2>What It Means</h2>
+        <p>Flow Field is about making mathematical structure visible and beautiful. The curl noise field is an invisible spatial function — the particles and their colors are the interface that makes it legible. Color-as-curvature transforms an abstract differential quantity into something you can see and intuitively understand. It's the same design challenge as SmartStretch or the Weighted Keyboard: physical (or mathematical) phenomena translated into a perceptible signal.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Benjamin Kase · 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>

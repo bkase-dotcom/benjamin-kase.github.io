@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audit Trail — Low-Fidelity Prototype</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">
+            <img src="assets/logo.png" alt="Audit Trail logo">
+        </div>
+        <div>
+          <div class="brand-title">Audit Trail</div>
+          <div class="brand-sub">Transparency prototype</div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Primary">
+        <button class="nav-item is-active" type="button" data-route="dashboard"><span class="dot" aria-hidden="true"></span>Dashboard</button>
+        <button class="nav-item" type="button" data-route="budgets"><span class="dot" aria-hidden="true"></span>Budgets</button>
+        <button class="nav-item" type="button" data-route="contracts"><span class="dot" aria-hidden="true"></span>Contracts</button>
+        <button class="nav-item" type="button" data-route="transactions"><span class="dot" aria-hidden="true"></span>Transactions</button>
+        <button class="nav-item" type="button" data-route="evidence"><span class="dot" aria-hidden="true"></span>Evidence</button>
+        <button class="nav-item" type="button" data-route="auditlog"><span class="dot" aria-hidden="true"></span>Audit Log</button>
+        <div class="nav-sep" aria-hidden="true"></div>
+        <button class="nav-item" type="button" data-route="public"><span class="dot" aria-hidden="true"></span>Public View</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="pill">LAHSA (demo)</div>
+        <div class="muted">Lo-fi · No real data</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-title">
+          <h1 id="pageTitle">Dashboard</h1>
+          <p class="muted" id="pageSubtitle">A traceable path from budget → contract → spend → evidence.</p>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="search">
+            <input id="searchInput" type="search" placeholder="Search vendor, contract, program…" />
+          </div>
+          <button class="btn" type="button" id="openTxn">+ New Transaction</button>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- DASHBOARD -->
+        <section class="view" data-view="dashboard">
+          <div class="grid-3">
+            <div class="card">
+              <div class="card-h">Total Budget (FY)</div>
+              <div class="big" id="kpiBudget">—</div>
+              <div class="muted">Approved allocations across programs</div>
+            </div>
+            <div class="card">
+              <div class="card-h">Spent to Date</div>
+              <div class="big" id="kpiSpent">—</div>
+              <div class="muted">Logged transactions with evidence</div>
+            </div>
+            <div class="card">
+              <div class="card-h">Unverified Spend</div>
+              <div class="big danger" id="kpiUnverified">—</div>
+              <div class="muted">Transactions missing docs / outcomes</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-h">Program Spend (mini)</div>
+              <div class="chart" id="miniChart"></div>
+              <div class="hint">Click a row to jump to Budgets.</div>
+            </div>
+
+            <div class="card">
+              <div class="card-h">Recent Activity</div>
+              <div class="feed" id="activityFeed"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BUDGETS -->
+        <section class="view" data-view="budgets" hidden>
+          <div class="card">
+            <div class="card-h">Program Budget</div>
+            <div class="toolbar">
+              <div class="field">
+                <label class="muted">Fiscal Year</label>
+                <select id="fySelect"></select>
+              </div>
+              <div class="field">
+                <label class="muted">Program</label>
+                <select id="programSelect"></select>
+              </div>
+            </div>
+
+            <div class="grid-3">
+              <div class="card grow">
+                <div class="card-h">Allocated</div>
+                <div class="big" id="budgetAllocated">—</div>
+              </div>
+              <div class="card grow">
+                <div class="card-h">Spent</div>
+                <div class="big" id="budgetSpent">—</div>
+              </div>
+              <div class="card grow">
+                <div class="card-h">Remaining</div>
+                <div class="big" id="budgetRemaining">—</div>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="card-h">Contracts in Program</div>
+            <div class="table" id="programContracts"></div>
+
+            <div class="divider"></div>
+            <div class="card-h">Program Note (demo)</div>
+            <div class="field">
+              <input id="budgetNote" type="text" placeholder="Add a note about allocations / risks / caveats…" />
+            </div>
+            <div class="modal-actions">
+              <button class="btn" type="button" id="btnSaveBudgetNote">Save Note</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONTRACTS -->
+        <section class="view" data-view="contracts" hidden>
+          <div class="card">
+            <div class="card-h">Contract Filters</div>
+            <div class="toolbar">
+              <div class="field">
+                <label class="muted">Status</label>
+                <select id="contractStatus">
+                  <option value="all">All</option>
+                  <option value="active">active</option>
+                  <option value="paused">paused</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="muted">Vendor</label>
+                <select id="vendorSelect"></select>
+              </div>
+              <div class="field">
+                <label class="muted">Export</label>
+                <button class="btn ghost" type="button" id="btnExportContracts">Export CSV</button>
+              </div>
+            </div>
+
+            <div class="card-h">Contracts</div>
+            <div class="table" id="contractsTable"></div>
+
+            <div class="divider"></div>
+            <div class="card" id="contractDetail" hidden>
+              <div class="card-h" id="cdName">Contract</div>
+              <div class="muted" id="cdMeta"></div>
+              <div class="hint">Budget Line: <span id="cdBudgetLine"></span></div>
+
+              <div class="progress"><div class="progress-bar" id="cdBar"></div></div>
+              <div class="hint" id="cdSpend"></div>
+
+              <div class="divider"></div>
+              <div class="card-h">Transactions</div>
+              <div class="table" id="cdTxns"></div>
+
+              <div class="divider"></div>
+              <div class="card-h">Evidence</div>
+              <div class="table" id="cdEvidence"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TRANSACTIONS -->
+        <section class="view" data-view="transactions" hidden>
+          <div class="card">
+            <div class="card-h">Transaction Filters</div>
+            <div class="toolbar">
+              <div class="field">
+                <label class="muted">Evidence</label>
+                <select id="verifyFilter">
+                  <option value="all">All</option>
+                  <option value="verified">verified</option>
+                  <option value="missing">missing</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="muted">Program</label>
+                <select id="txnProgramFilter"></select>
+              </div>
+              <div class="field">
+                <label class="muted">Export</label>
+                <button class="btn ghost" type="button" id="btnExportTxns">Export CSV</button>
+              </div>
+            </div>
+
+            <div class="card-h">Transactions</div>
+            <div class="table" id="txnsTable"></div>
+          </div>
+        </section>
+
+        <!-- EVIDENCE -->
+        <section class="view" data-view="evidence" hidden>
+          <div class="card">
+            <div class="card-h">Evidence</div>
+            <div class="table" id="evidenceTable"></div>
+
+            <div class="divider"></div>
+            <div class="card-h">Add Evidence (demo)</div>
+            <div class="toolbar">
+              <div class="field">
+                <label class="muted">Transaction ID</label>
+                <input id="evTxnId" type="text" placeholder="e.g., TXN-1042" />
+              </div>
+              <div class="field">
+                <label class="muted">Type</label>
+                <select id="evType">
+                  <option>Invoice</option>
+                  <option>Outcome Metrics</option>
+                  <option>Photo / Field Note</option>
+                  <option>Report</option>
+                </select>
+              </div>
+              <div class="field" style="flex:1; min-width:240px">
+                <label class="muted">Notes</label>
+                <input id="evNotes" type="text" placeholder="Short description" />
+              </div>
+              <div class="field">
+                <label class="muted">Action</label>
+                <button class="btn" type="button" id="btnAddEvidence">Add Evidence</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- AUDIT LOG -->
+        <section class="view" data-view="auditlog" hidden>
+          <div class="card">
+            <div class="card-h">Audit Log</div>
+            <div class="table" id="auditTable"></div>
+          </div>
+        </section>
+
+        <!-- PUBLIC -->
+        <section class="view" data-view="public" hidden>
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-h">Verified Spend (demo)</div>
+              <div class="big" id="pubSpend">—</div>
+              <div class="muted">Verified transactions only</div>
+            </div>
+            <div class="card">
+              <div class="card-h">Verification Rate</div>
+              <div class="big" id="pubVerified">—</div>
+              <div class="muted">Shareable trust metric</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-h">Top Programs</div>
+              <div id="pubPrograms" class="muted"></div>
+            </div>
+            <div class="card">
+              <div class="card-h">Plain-Language Summary</div>
+              <ul class="list" id="pubPlain"></ul>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: hidden by default; opened by #openTxn -->
+  <div class="modal hidden" id="txnModal" aria-hidden="true" hidden>
+    <div class="modal-backdrop" id="txnBackdrop" data-close></div>
+
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="txnTitle">
+      <div class="modal-h">
+        <div>
+          <div class="modal-title" id="txnTitle">New Transaction</div>
+          <div class="muted">Create a spend record and track whether evidence is attached.</div>
+        </div>
+        <button class="icon-btn" type="button" id="closeTxn" aria-label="Close" data-close>✕</button>
+      </div>
+
+      <form class="form" id="txnForm">
+        <div class="grid-2">
+          <div class="field">
+            <label>Program</label>
+            <select id="mProgram"></select>
+          </div>
+          <div class="field">
+            <label>Contract</label>
+            <select id="mContract"></select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Amount</label>
+            <input id="mAmount" type="number" placeholder="e.g., 25000" />
+          </div>
+          <div class="field">
+            <label>Outcome (lo-fi)</label>
+            <input id="mOutcome" type="text" placeholder="e.g., 12 contacts, 3 referrals" />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label>Notes</label>
+            <input id="mNotes" type="text" placeholder="Short context" />
+          </div>
+          <div class="field">
+            <label>Evidence status</label>
+            <select id="mVerified">
+              <option value="missing">missing</option>
+              <option value="verified">verified</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn ghost" type="button" id="cancelTxn" data-close>Cancel</button>
+          <button class="btn" type="submit" id="createTxn">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

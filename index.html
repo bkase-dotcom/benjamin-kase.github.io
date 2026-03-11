@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benjamin Kase — Interaction + Systems</title>
+  <meta name="description" content="I build systems that translate physical human action into meaningful digital signals — and design the experience around that translation.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <style>
+    .project-card.external .card-arrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .external-badge {
+      font-size: 0.625rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      padding: 2px 6px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .project-card.external:hover .external-badge {
+      color: var(--accent);
+      border-color: rgba(110, 182, 255, 0.3);
+    }
+
+    /* ── Peephole hero images ── */
+    .card-peephole-wrap {
+      flex-shrink: 0;
+      width: 128px;
+      height: 128px;
+      min-width: 128px;
+      min-height: 128px;
+      position: relative;
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 2.5px rgba(255,255,255,0.10),
+        0 0 0 5px rgba(255,255,255,0.04),
+        0 4px 12px rgba(0,0,0,0.3);
+    }
+    .card-peephole {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      clip-path: circle(50%);
+      -webkit-clip-path: circle(50%);
+      isolation: isolate;
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
+    .card-peephole img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      /* Haze / frosted lens effect on the image itself */
+      filter: blur(1.2px) saturate(0.7) brightness(0.85);
+      transition: filter 0.4s ease;
+    }
+    .project-card:hover .card-peephole img {
+      filter: blur(0.4px) saturate(0.9) brightness(0.95);
+    }
+    /* Glass overlay — barrel distortion vignette + specular caustics */
+    .card-peephole::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background:
+        /* Primary specular highlight — top-left caustic */
+        radial-gradient(ellipse 60% 50% at 32% 28%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.06) 40%, transparent 70%),
+        /* Secondary reflection — bottom-right */
+        radial-gradient(ellipse 40% 35% at 70% 72%, rgba(255,255,255,0.10) 0%, transparent 50%),
+        /* Barrel distortion vignette — heavy darkening at edges */
+        radial-gradient(circle at 50% 50%, transparent 35%, rgba(0,0,0,0.20) 55%, rgba(0,0,0,0.50) 75%, rgba(0,0,0,0.75) 100%);
+      box-shadow:
+        inset 0 0 24px rgba(0,0,0,0.5),
+        inset 0 1px 3px rgba(255,255,255,0.18),
+        inset 0 -1px 2px rgba(255,255,255,0.05);
+      pointer-events: none;
+      transition: background 0.4s ease;
+    }
+    /* Lens housing ring */
+    .card-peephole::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.10);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .project-card:hover .card-peephole::after {
+      background:
+        radial-gradient(ellipse 60% 50% at 32% 28%, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.10) 40%, transparent 70%),
+        radial-gradient(ellipse 40% 35% at 70% 72%, rgba(255,255,255,0.14) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.15) 58%, rgba(0,0,0,0.40) 75%, rgba(0,0,0,0.65) 100%);
+    }
+
+    /* Card layout with peephole — flex row */
+    .project-card.has-peephole {
+      flex-direction: row;
+      align-items: center;
+    }
+    .card-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (max-width: 480px) {
+      .card-peephole-wrap {
+        width: 96px;
+        height: 96px;
+        min-width: 96px;
+        min-height: 96px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="/" class="nav-logo">Benjamin Kase</a>
+      <ul class="nav-links">
+        <li><a href="/">Work</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <h1>I build systems that translate physical human action into meaningful digital signals</h1>
+      <p class="subtitle">— and design the experience around that translation.</p>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container">
+      <p class="section-label">Selected Work</p>
+
+      <div class="project-grid">
+
+        <a href="/smartstretch/" class="project-card glass featured has-peephole">
+          <div class="card-content">
+            <span class="card-tag">Sensing · watchOS · Service Design · Clinical EHR</span>
+            <h3>SmartStretch</h3>
+            <p>A connected rehabilitation service — from wearable strain and sEMG sensors, through a real-time watchOS exercise app, to a clinician-facing EHR extension embedded in WebPT. Service design, interaction design, and a working prototype.</p>
+            <span class="card-arrow">→</span>
+          </div>
+          <div class="card-peephole-wrap">
+            <div class="card-peephole">
+              <img src="smartstretch/assets/motion-icon.png" alt="Motion app icon" width="128" height="128">
+            </div>
+          </div>
+        </a>
+
+        <a href="/keyboard/" class="project-card glass has-peephole">
+          <div class="card-content">
+            <span class="card-tag">Hardware · MIDI · Human Factors</span>
+            <h3>Weighted Keyboard</h3>
+            <p>Hall effect sensor to MIDI pipeline with force-displacement curve tuning. 17 years of piano training made rigorous through engineering methodology.</p>
+            <span class="card-arrow">→</span>
+          </div>
+          <div class="card-peephole-wrap">
+            <div class="card-peephole">
+              <img src="keyboard/assets/octave-v2.jpeg" alt="Assembled keyboard octave prototype" width="128" height="128">
+            </div>
+          </div>
+        </a>
+
+        <a href="/audit-trail/" class="project-card glass has-peephole">
+          <div class="card-content">
+            <span class="card-tag">Data · Policy · Traceability</span>
+            <h3>Audit Trail</h3>
+            <p>Interactive traceability tool for LA homelessness spending data. Transparency isn't publishing reports — it's making spending traceable throughout its lifecycle.</p>
+            <span class="card-arrow">→</span>
+          </div>
+          <div class="card-peephole-wrap">
+            <div class="card-peephole">
+              <img src="audit-trail/app/assets/logo.png" alt="Audit Trail logo" width="128" height="128">
+            </div>
+          </div>
+        </a>
+
+        <a href="https://bkase-dotcom.github.io/ACCD-fall-2025/creative-prototyping/week11/Self%20Stock/prototype/index.html" target="_blank" rel="noopener" class="project-card glass external">
+          <span class="card-tag">Computer Vision · ML · Tracking</span>
+          <h3>ML5.js Inventory System</h3>
+          <p>Three-layer CV architecture — COCO-SSD detection, Teachable Machine classification, and centroid tracking for persistent object identity across frames.</p>
+          <span class="card-arrow"><span class="external-badge">External</span> ↗</span>
+        </a>
+
+        <a href="https://bkase-dotcom.github.io/ACCD-fall-2025/creative-prototyping/week8/Ptrns_rthm_mvmt/index.html" target="_blank" rel="noopener" class="project-card glass external">
+          <span class="card-tag">Generative · P5.js · Performance</span>
+          <h3>Flow Field</h3>
+          <p>Real-time generative system with curl noise and vortex dynamics. ~8,000 particles, color mapped to radius of curvature, performance optimized with flat arrays.</p>
+          <span class="card-arrow"><span class="external-badge">External</span> ↗</span>
+        </a>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Benjamin Kase · 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>

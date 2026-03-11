@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weighted Keyboard — Benjamin Kase</title>
+  <meta name="description" content="An ultraportable weighted keyboard with N52 neodymium magnet action and Hall effect sensor MIDI triggering.">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+  <style>
+    /* ── Icons ── */
+    .icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+    .icon-sm {
+      width: 20px;
+      height: 20px;
+    }
+    .icon-lg {
+      width: 40px;
+      height: 40px;
+    }
+
+    /* ── Image blocks ── */
+    .image-block {
+      margin: 32px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .image-block img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .image-caption {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      padding: 12px 16px;
+      line-height: 1.4;
+    }
+
+    /* ── Spec list ── */
+    .spec-list {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 8px 16px;
+      margin-top: 12px;
+    }
+    .spec-list dt {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .spec-list dd {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+    }
+
+    /* ── Icon cards ── */
+    .icon-card {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 24px;
+    }
+    .icon-card .icon {
+      margin-top: 2px;
+      opacity: 0.7;
+    }
+    .icon-card h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .icon-card p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── FEA comparison (side by side) ── */
+    .compare-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 24px 0;
+    }
+    .compare-block {
+      padding: 28px 24px;
+    }
+    .compare-block h4 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .compare-block h4 .icon-sm { opacity: 0.5; }
+    .compare-block p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .compare-block .material-tag {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .compare-block .tag-fail {
+      background: rgba(255, 69, 58, 0.15);
+      color: #ff6961;
+    }
+    .compare-block .tag-pass {
+      background: rgba(48, 209, 88, 0.15);
+      color: #30d158;
+    }
+
+    /* ── Prototype evolution timeline ── */
+    .proto-timeline {
+      position: relative;
+      margin: 32px 0;
+      padding-left: 48px;
+    }
+    .proto-timeline::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 8px;
+      bottom: 8px;
+      width: 2px;
+      background: linear-gradient(
+        to bottom,
+        #ff453a 0%,
+        #ff9f0a 33%,
+        #ffd60a 66%,
+        #30d158 100%
+      );
+      border-radius: 1px;
+    }
+    .proto-node {
+      position: relative;
+      margin-bottom: 36px;
+    }
+    .proto-node:last-child { margin-bottom: 0; }
+    .proto-dot {
+      position: absolute;
+      left: -40px;
+      top: 4px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .proto-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .proto-node h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .proto-node .version-tag {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+    .proto-node .outcome {
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+    .proto-node p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .proto-node .image-block {
+      margin: 12px 0 0;
+      max-width: 480px;
+    }
+
+    /* Version color stages */
+    .version--v1 .version-tag { background: rgba(255, 69, 58, 0.15); color: #ff6961; }
+    .version--v1 .proto-dot { color: #ff453a; }
+    .version--v2 .version-tag { background: rgba(255, 159, 10, 0.15); color: #ffb340; }
+    .version--v2 .proto-dot { color: #ff9f0a; }
+    .version--v3 .version-tag { background: rgba(255, 214, 10, 0.15); color: #ffd60a; }
+    .version--v3 .proto-dot { color: #ffd60a; }
+    .version--v4 .version-tag { background: rgba(48, 209, 88, 0.15); color: #30d158; }
+    .version--v4 .proto-dot { color: #30d158; }
+
+    /* ── Assembly strip (horizontal specs) ── */
+    .assembly-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin: 24px 0 40px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+    }
+    .assembly-item {
+      padding: 24px 20px;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+    }
+    .assembly-item:last-child { border-right: none; }
+    .assembly-item .icon {
+      margin: 0 auto 10px;
+      opacity: 0.5;
+    }
+    .assembly-item h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-tertiary);
+      margin-bottom: 6px;
+    }
+    .assembly-item p {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* ── Image pair (side by side) ── */
+    .image-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 32px 0;
+    }
+    .image-pair .image-block {
+      margin: 0;
+    }
+
+    /* ── Photo gallery (assembly) ── */
+    .photo-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin: 32px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .photo-gallery img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+      transition: opacity 0.2s;
+    }
+    .photo-gallery img:hover {
+      opacity: 0.85;
+    }
+    .photo-gallery .gallery-wide {
+      grid-column: span 2;
+    }
+    .photo-gallery .gallery-wide img {
+      height: 280px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .spec-list { grid-template-columns: 1fr; }
+      .compare-pair { grid-template-columns: 1fr; }
+      .assembly-strip { grid-template-columns: 1fr 1fr; }
+      .assembly-item:nth-child(2) { border-right: none; }
+      .assembly-item:nth-child(-n+2) { border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+      .image-pair { grid-template-columns: 1fr; }
+      .photo-gallery { grid-template-columns: 1fr 1fr; }
+      .photo-gallery .gallery-wide { grid-column: span 2; }
+      .photo-gallery img { height: 200px; }
+    }
+    @media (max-width: 480px) {
+      .assembly-strip { grid-template-columns: 1fr; }
+      .assembly-item { border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+      .assembly-item:last-child { border-bottom: none; }
+      .proto-timeline { padding-left: 40px; }
+      .photo-gallery { grid-template-columns: 1fr; }
+      .photo-gallery .gallery-wide { grid-column: span 1; }
+      .photo-gallery img, .photo-gallery .gallery-wide img { height: 220px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════ SVG Icon Defs (hidden) ═══════════ -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <!-- Music / Piano key -->
+    <symbol id="i-music" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+    </symbol>
+    <!-- Magnet -->
+    <symbol id="i-magnet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 2v6a6 6 0 0 0 12 0V2"/><path d="M6 2h4v6a2 2 0 0 1-4 0V2z"/><path d="M14 2h4v6a2 2 0 0 1-4 0V2z"/>
+    </symbol>
+    <!-- Cube / 3D CAD -->
+    <symbol id="i-cube" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+    </symbol>
+    <!-- Printer / Fabrication -->
+    <symbol id="i-printer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+    </symbol>
+    <!-- Scale / Weight -->
+    <symbol id="i-weight" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3a4 4 0 0 0-4 4h8a4 4 0 0 0-4-4z"/><path d="M5 7l-1 13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2L19 7H5z"/>
+    </symbol>
+    <!-- Ruler / Measure -->
+    <symbol id="i-ruler" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21.73 18l-8-14a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3z"/><line x1="12" y1="9" x2="12" y2="13"/>
+    </symbol>
+    <!-- Microscope / Analysis -->
+    <symbol id="i-analyze" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+    </symbol>
+    <!-- Wrench / Tools -->
+    <symbol id="i-wrench" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+    </symbol>
+    <!-- Grid / FEA mesh -->
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+    </symbol>
+    <!-- Bolt / Sensor -->
+    <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 2L4.5 12.5h6l-1 9.5 8.5-12h-6L13 2z"/>
+    </symbol>
+    <!-- Waveform / Signal -->
+    <symbol id="i-waveform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12h2l3-8 4 16 3-10 2 4h4"/>
+    </symbol>
+    <!-- Layers -->
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+    </symbol>
+    <!-- Chart -->
+    <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 5-9"/>
+    </symbol>
+    <!-- Target -->
+    <symbol id="i-target" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+    </symbol>
+    <!-- Check -->
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/>
+    </symbol>
+    <!-- Thermometer / Thermal -->
+    <symbol id="i-thermo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+    </symbol>
+  </svg>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="/" class="nav-logo">Benjamin Kase</a>
+      <ul class="nav-links">
+        <li><a href="/">Work</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <a href="/" class="back-link">← Back to Work</a>
+      <h1>Weighted Keyboard</h1>
+      <p class="page-desc">An ultraportable weighted keyboard that replicates the feel of acoustic piano action — using N52 neodymium magnets for key weighting and Hall effect sensors for continuous MIDI triggering. Born from 17 years of piano training and frustration with travel keyboards that sacrifice touch for portability.</p>
+    </div>
+  </div>
+
+  <main class="section">
+    <div class="container">
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="research">Research & Materials</button>
+        <button class="tab-btn" data-tab="prototyping">Prototyping</button>
+        <button class="tab-btn" data-tab="sensing">Sensing & Assembly</button>
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- ── Research & Materials Tab ───── -->
+      <!-- ══════════════════════════════════ -->
+      <div class="tab-panel active" id="research">
+
+        <div class="content-block">
+          <h2>The Problem</h2>
+          <p>Existing portable keyboards fall into two camps: lightweight but mushy, or weighted but bulky. For traveling musicians, producers, and students, there's no option that delivers authentic piano feel in something you'd actually take on a plane. The market gap is clear — a keyboard that weighs under 5 lbs but plays like an 88-key acoustic.</p>
+        </div>
+
+        <div class="content-block">
+          <h2>Personal Motivation</h2>
+          <p>17+ years of piano training means muscle memory is non-negotiable. A keyboard that doesn't push back correctly rewires your touch. This project started from lived frustration — wanting to practice seriously while traveling without hauling 40 lbs of weighted action.</p>
+        </div>
+
+        <div class="detail-grid">
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-target"/></svg>
+            <div>
+              <h4>Target Users</h4>
+              <p>Traveling musicians, producers, music students, and hobbyists who need authentic weighted feel in a portable form factor.</p>
+            </div>
+          </div>
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-weight"/></svg>
+            <div>
+              <h4>Design Goal</h4>
+              <p>Match the force-displacement curve of an acoustic piano action using magnetic repulsion instead of mechanical counterweights and levers.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Material Selection — FEA-Driven</h2>
+          <p>Key material choice determines whether the keyboard survives real use. Finite element analysis compared two candidates under a 1.5 N static load (typical piano keystroke force) and thermal stress conditions.</p>
+        </div>
+
+        <div class="compare-pair">
+          <div class="compare-block glass">
+            <span class="material-tag tag-fail">Failed — Excessive Deflection</span>
+            <h4><svg class="icon-sm"><use href="#i-grid"/></svg> ABS Plastic</h4>
+            <p>Standard FDM printing material. Under 1.5 N load, FEA showed excessive displacement — keys would flex noticeably during normal playing. Fatigue life unacceptable for repetitive keystroke loads. Fine for enclosures, wrong for load-bearing action components.</p>
+          </div>
+          <div class="compare-block glass">
+            <span class="material-tag tag-pass">Selected — Meets Requirements</span>
+            <h4><svg class="icon-sm"><use href="#i-grid"/></svg> Glass-Fiber Reinforced PF Composite</h4>
+            <p>Phenol formaldehyde reinforced with glass fiber. Significantly stiffer under identical loading — displacement within acceptable range. Superior fatigue resistance for repetitive keystrokes. Thermal stability handles temperature variations during transport and storage.</p>
+          </div>
+        </div>
+
+        <div class="image-pair">
+          <div class="image-block">
+            <img src="assets/fea-comparison-ABS.png" alt="FEA displacement analysis of ABS plastic key under 1.5N load" loading="lazy">
+            <p class="image-caption">ABS plastic — max displacement 1.104 mm. Excessive deflection at key tip under 1.5 N load.</p>
+          </div>
+          <div class="image-block">
+            <img src="assets/fea-comparison-PF.png" alt="FEA displacement analysis of GFR PF composite key under 1.5N load" loading="lazy">
+            <p class="image-caption">GFR PF composite — max displacement 0.133 mm. ~8× stiffer, well within acceptable range.</p>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Material Properties</h2>
+          <dl class="spec-list">
+            <dt>ABS — Stiffness</dt>
+            <dd>~2.3 GPa tensile modulus — insufficient for thin-wall key geometry</dd>
+            <dt>GFR PF — Stiffness</dt>
+            <dd>~8–12 GPa tensile modulus — 4× stiffer than ABS at comparable weight</dd>
+            <dt>Load Case</dt>
+            <dd>1.5 N static (typical keystroke), evaluated at key tip and hinge point</dd>
+            <dt>Thermal</dt>
+            <dd>Stress analysis for storage/transport temperature range (0°C–50°C)</dd>
+            <dt>Benchmark</dt>
+            <dd>Ivory reference for surface tactile properties and finger contact feel</dd>
+          </dl>
+        </div>
+
+        <div class="content-block">
+          <h2>CAD Modeling</h2>
+          <p>All modeling done in Fusion 360. Monolithic key design integrates the hinge geometry directly into each key body — no separate pivot hardware. Modular connection features allow individual keys to snap into octave frames, enabling scalable assembly from a single octave prototype to full 88-key layout.</p>
+        </div>
+
+        <div class="image-pair">
+          <div class="image-block">
+            <img src="assets/cad-model-key.png" alt="Fusion 360 dimensioned drawing and 3D model of individual key" loading="lazy">
+            <p class="image-caption">Individual key — 164 mm length, 28 mm height. Monolithic body with integrated hinge and magnet pockets.</p>
+          </div>
+          <div class="image-block">
+            <img src="assets/cad-model-octave.png" alt="Fusion 360 dimensioned drawing and 3D model of octave assembly" loading="lazy">
+            <p class="image-caption">Octave assembly — 166 mm width. Modular snap-fit connection features for scalable multi-octave layout.</p>
+          </div>
+        </div>
+
+        <div class="image-block">
+          <img src="assets/hing-closeup.png" alt="Close-up CAD render of integrated hinge geometry" loading="lazy">
+          <p class="image-caption">Hinge detail: living hinge geometry integrated directly into the key body — no separate pivot hardware.</p>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- ── Prototyping Tab ─────────────── -->
+      <!-- ══════════════════════════════════ -->
+      <div class="tab-panel" id="prototyping">
+
+        <div class="content-block">
+          <h2>Iterative Key Prototypes</h2>
+          <p>Four generations of individual key prototypes, each addressing failures from the previous version. All 3D printed on FDM printers with progressive refinements to wall thickness, edge geometry, and weighting mechanism.</p>
+        </div>
+
+        <div class="proto-timeline">
+          <div class="proto-node version--v1">
+            <div class="proto-dot"></div>
+            <span class="version-tag">V1 — Proof of Concept</span>
+            <h4>Thin-Wall Exploration</h4>
+            <p>First physical test of the monolithic key geometry. Minimal wall thickness to test hinge flex. Result: structurally unusable — walls too thin for any meaningful force application. Valuable for validating print orientation and hinge geometry.</p>
+            <p class="outcome">Outcome → Confirmed hinge concept works, but wall thickness needs 2–3× increase.</p>
+            <div class="image-block">
+              <img src="assets/key-v1.jpeg" alt="Key prototype V1 — light blue 3D print with thin walls" loading="lazy">
+            </div>
+          </div>
+
+          <div class="proto-node version--v2">
+            <div class="proto-dot"></div>
+            <span class="version-tag">V2 — Spring + Magnet</span>
+            <h4>First Weighted Action</h4>
+            <p>Thicker walls with a spring and magnet weighting mechanism. First prototype with actual key resistance. Played with recognizable piano-like feel, but the spring-magnet combination was too delicate — springs dislodged during repeated keystrokes.</p>
+            <p class="outcome">Outcome → Proved weighted feel is achievable. Spring retention mechanism needs redesign.</p>
+            <div class="image-block">
+              <img src="assets/key-v2.jpeg" alt="Key prototype V2 — teal 3D print with spring and magnet mechanism" loading="lazy">
+            </div>
+          </div>
+
+          <div class="proto-node version--v3">
+            <div class="proto-dot"></div>
+            <span class="version-tag">V3 — Structural Refinement</span>
+            <h4>Rounded Edges & Reinforcement</h4>
+            <p>Addressed V2's fragility with rounded edges (stress concentration reduction), thicker hinge cross-section, and improved layer adhesion through print parameter tuning. More durable under repeated play.</p>
+            <p class="outcome">Outcome → Structurally sound for extended testing. Ready for magnet-only weighting system.</p>
+            <div class="image-block">
+              <img src="assets/key-v3.jpeg" alt="Key prototype V3 — black 3D print with rounded edges and magnet recesses" loading="lazy">
+            </div>
+          </div>
+
+          <div class="proto-node version--v4">
+            <div class="proto-dot"></div>
+            <span class="version-tag">V4 — Magnet Weighting</span>
+            <h4>N52 Neodymium + Vertical Guide Track</h4>
+            <p>Replaced spring mechanism with N52 neodymium magnets in repulsion configuration. Added vertical guide track to constrain key travel to a single axis. Magnet spacing calibrated to approximate the force-displacement curve of a Yamaha weighted action.</p>
+            <p class="outcome">Outcome → Demonstrated that magnet-based weighting alone can replicate piano feel. Key milestone.</p>
+            <div class="image-block">
+              <img src="assets/key-v4.jpeg" alt="Key prototype V4 — orange 3D print with N52 magnet visible at hinge" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Octave Prototypes</h2>
+          <p>Two octave-scale prototypes testing multi-key interaction, modularity, and sensor integration.</p>
+        </div>
+
+        <div class="detail-grid">
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-printer"/></svg>
+            <div>
+              <h4>Octave V1 — Springs + External Magnets</h4>
+              <p>First multi-key assembly. Spring-based weighting with external N52 magnets. Validated that adjacent keys don't interfere magnetically. Identified alignment tolerances needed for consistent feel across all 12 keys.</p>
+            </div>
+          </div>
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-cube"/></svg>
+            <div>
+              <h4>Octave V2 — Snap-Fit + Hall Effect</h4>
+              <p>Side recesses for snap-fit modular connection between octave units. Integrated Hall effect sensor positioning for MIDI triggering. Felt pads added for dampening at key-bottom. First prototype with electronic sensing.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="image-pair">
+          <div class="image-block">
+            <img src="assets/octave-v1.jpeg" alt="Octave V1 — white 3D printed octave with spring-based weighting" loading="lazy">
+            <p class="image-caption">Octave V1 — spring-based weighting with external N52 magnets. First multi-key assembly.</p>
+          </div>
+          <div class="image-block">
+            <img src="assets/octave-v2.jpeg" alt="Octave V2 — refined octave with snap-fit modularity and Hall effect sensors" loading="lazy">
+            <p class="image-caption">Octave V2 — snap-fit side recesses, Hall effect sensor positioning, felt dampening pads.</p>
+          </div>
+        </div>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Complete 88-Key CAD</h2>
+          <p>Full 88-key layout modeled in Fusion 360 from the modular octave design. The snap-fit connection system allows the keyboard to be manufactured as individual octave modules and assembled without fasteners — a key enabler for both manufacturing and portability.</p>
+        </div>
+
+        <div class="image-block">
+          <img src="assets/88key-AIgen.png" alt="Full 88-key weighted keyboard concept render" loading="lazy">
+          <p class="image-caption">88-key concept visualization — modular octave units connected via snap-fit recesses, with weight profile selection display.</p>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════════ -->
+      <!-- ── Sensing & Assembly Tab ──────── -->
+      <!-- ══════════════════════════════════ -->
+      <div class="tab-panel" id="sensing">
+
+        <div class="content-block">
+          <h2>Hall Effect → MIDI Pipeline</h2>
+          <p>Each key carries an N52 neodymium magnet. Hall effect sensors positioned on the base PCB detect the magnetic field strength continuously as the key travels — producing a voltage proportional to displacement. This analog signal maps to MIDI velocity, enabling expressive dynamics that capture <em>how</em> each key is pressed, not just <em>that</em> it was pressed.</p>
+        </div>
+
+        <div class="assembly-strip">
+          <div class="assembly-item">
+            <svg class="icon"><use href="#i-magnet"/></svg>
+            <h4>Magnets</h4>
+            <p>N52 neodymium<br>Repulsion weighting<br>+ key-mounted sensing</p>
+          </div>
+          <div class="assembly-item">
+            <svg class="icon"><use href="#i-bolt"/></svg>
+            <h4>Sensors</h4>
+            <p>Hall effect sensors<br>Continuous analog<br>displacement tracking</p>
+          </div>
+          <div class="assembly-item">
+            <svg class="icon"><use href="#i-waveform"/></svg>
+            <h4>Signal</h4>
+            <p>Voltage → position<br>Force-displacement<br>curve per keystroke</p>
+          </div>
+          <div class="assembly-item">
+            <svg class="icon"><use href="#i-music"/></svg>
+            <h4>Output</h4>
+            <p>MIDI Note On<br>Velocity mapping<br>Expressive dynamics</p>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h2>Assembly Details</h2>
+          <p>The physical assembly integrates 3D printed key frames, ceramic magnets in recesses, Hall effect sensors positioned for optimal displacement detection, and N52 magnets secured on the base. Felt pads at key-bottom provide acoustic dampening and define the end-of-travel feel.</p>
+        </div>
+
+        <div class="detail-grid">
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-layers"/></svg>
+            <div>
+              <h4>Key Assembly</h4>
+              <p>3D printed key body with integrated hinge. Ceramic magnets press-fit into recesses on the key underside. Vertical guide track constrains travel to a single axis.</p>
+            </div>
+          </div>
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-wrench"/></svg>
+            <div>
+              <h4>Base Frame</h4>
+              <p>N52 neodymium magnets secured to base with tape (prototype) — production design uses press-fit pockets. Hall effect sensors soldered to PCB at calibrated positions beneath each key.</p>
+            </div>
+          </div>
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-analyze"/></svg>
+            <div>
+              <h4>Calibration</h4>
+              <p>Magnet spacing tuned per-key to match the force-displacement curve of a weighted acoustic action. Sensor gain adjusted so full key travel maps to full MIDI velocity range (0–127).</p>
+            </div>
+          </div>
+          <div class="icon-card glass">
+            <svg class="icon"><use href="#i-check"/></svg>
+            <div>
+              <h4>Dampening</h4>
+              <p>Felt pads at key-bottom absorb impact and define a positive end-of-travel stop. Mimics the felt-on-wood contact of acoustic piano hammers.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="photo-gallery">
+          <div>
+            <img src="assets/assembly1.jpeg" alt="Disassembled parts — frame, keys, and hinge mechanisms laid flat" loading="lazy">
+          </div>
+          <div>
+            <img src="assets/assembly2.jpeg" alt="Individual keys with ceramic magnets press-fit into recesses" loading="lazy">
+          </div>
+          <div>
+            <img src="assets/assembly3.jpeg" alt="Close-up of Hall effect sensors wired inside the key frame" loading="lazy">
+          </div>
+          <div class="gallery-wide">
+            <img src="assets/assembly4.jpeg" alt="Assembled octave with Hall effect sensor wires connected to jumper cables" loading="lazy">
+          </div>
+          <div>
+            <img src="assets/assembly5.jpeg" alt="Base plate with N52 magnets and ceramic magnets secured with tape, Teensy on breadboard" loading="lazy">
+          </div>
+        </div>
+        <p class="image-caption" style="margin-top: -20px;">Assembly progression: disassembled components → keys with ceramic magnets → Hall effect sensor wiring → assembled octave with sensor harness → base plate with N52 magnets and Teensy breadboard.</p>
+
+        <div class="content-block" style="margin-top: 48px;">
+          <h2>Results & Next Steps</h2>
+          <p>The V4 key and Octave V2 prototypes demonstrated that magnet-based weighting can successfully replicate the feel of weighted piano action in a fraction of the weight and volume. Hall effect sensing captures continuous key displacement for expressive MIDI output.</p>
+        </div>
+
+        <div class="compare-pair">
+          <div class="compare-block glass">
+            <h4><svg class="icon-sm"><use href="#i-check"/></svg> What Worked</h4>
+            <p>N52 repulsion-based weighting mimics real piano feel. Hall effect continuous sensing captures dynamics lost by binary velocity keyboards. Modular snap-fit octaves scale to full 88-key layout. 3D printing enables rapid iteration — 4 key versions in weeks.</p>
+          </div>
+          <div class="compare-block glass">
+            <h4><svg class="icon-sm"><use href="#i-target"/></svg> Next Steps</h4>
+            <p>Resin printing for production-quality surface finish. Hybrid magnet/electromagnet system for adjustable weighting profiles. Teensy microcontroller integration for USB MIDI output. Comparative user testing with trained pianists against reference weighted keyboards.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Benjamin Kase · 2026</p>
+    </div>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>

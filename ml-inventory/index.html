@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ML5.js Inventory System — Benjamin Kase</title>
+  <meta name="description" content="Three-layer computer vision architecture for persistent object identity across frames.">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="container">
+      <a href="/" class="nav-logo">Benjamin Kase</a>
+      <ul class="nav-links">
+        <li><a href="/">Work</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="container">
+      <a href="/" class="back-link">← Back to Work</a>
+      <h1>ML5.js Inventory System</h1>
+      <p class="page-desc">A three-layer computer vision pipeline that combines COCO-SSD object detection, Teachable Machine classification, and centroid tracking to maintain persistent object identity across video frames — all running in the browser.</p>
+    </div>
+  </div>
+
+  <main class="section">
+    <div class="container">
+
+      <div class="content-block">
+        <h2>The Problem</h2>
+        <p>Off-the-shelf object detection (COCO-SSD) identifies <em>what</em> objects are in a frame, but treats each frame independently. It can't distinguish between two instances of the same object class, and it has no memory across frames. For an inventory system, you need to know not just "there's a bottle" but "this is the same bottle that was here 30 frames ago, and it's a specific type of bottle."</p>
+      </div>
+
+      <div class="content-block">
+        <h2>Three-Layer Architecture</h2>
+        <p>Each layer solves a specific limitation of the layer below it, building from generic detection to persistent, classified identity.</p>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-card glass">
+          <h4>Layer 1: COCO-SSD Detection</h4>
+          <p>Pre-trained object detection provides bounding boxes and generic class labels (e.g., "bottle", "cell phone"). Runs per-frame with no cross-frame memory. This is the foundation — fast, reliable, but generic.</p>
+        </div>
+        <div class="detail-card glass">
+          <h4>Layer 2: Teachable Machine Classification</h4>
+          <p>A custom-trained classifier runs on cropped bounding box regions to provide specific labels (e.g., "Nalgene water bottle" vs. "glass jar"). Teachable Machine enables rapid retraining for new inventory items without code changes.</p>
+        </div>
+        <div class="detail-card glass">
+          <h4>Layer 3: Centroid Tracking</h4>
+          <p>Centroid-based tracking assigns persistent IDs by matching detection centroids across frames using distance thresholds. This solves the identity problem — even when detection flickers, the tracker maintains continuity.</p>
+        </div>
+      </div>
+
+      <div class="content-block" style="margin-top: 48px;">
+        <h2>Pipeline Flow</h2>
+        <p>Each video frame flows through all three layers sequentially: COCO-SSD produces bounding boxes → Teachable Machine classifies each box → centroid tracker matches detections to existing tracked objects or creates new IDs. The output is a persistent, classified inventory of all visible objects, updated in real time.</p>
+      </div>
+
+      <div class="content-block">
+        <h2>What It Means</h2>
+        <p>This project demonstrates that meaningful computer vision applications don't require a single monolithic model. By composing three lightweight, specialized layers — each solving one specific problem — you get a system that's more flexible, more debuggable, and more adaptable than an end-to-end approach. The architecture is the insight: detection, classification, and tracking are separable concerns.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Benjamin Kase · 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>
