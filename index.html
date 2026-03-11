@@ -30,6 +30,30 @@
     }
 
     /* ── Peephole hero images ── */
+    /*
+     * Architecture:
+     *  .card-peephole-wrap  — plain positioned element, no stacking context.
+     *                         Ambient glow + ring are pure box-shadow on hover.
+     *  .card-peephole       — background-image set via inline style, clipped to
+     *                         a circle by overflow:hidden + border-radius. No
+     *                         <img> child, no filter — avoids the WebKit bug
+     *                         where filter on a child escapes overflow clipping,
+     *                         and avoids GPU layer promotion that causes the
+     *                         background-image to disappear during scroll/pan.
+     */
+    /*
+     * No isolation: isolate, no pseudo-elements with filter.
+     * filter: blur on any descendant of an isolation: isolate stacking context
+     * forces the entire context onto a GPU compositing layer. When the
+     * compositor evicts that layer during scroll/pan, background-image content
+     * painted inside it disappears until a full repaint. Removing both
+     * isolation and the blurred pseudo-element keeps everything in the normal
+     * paint phase, which is stable across scroll, pan, and back-nav.
+     *
+     * Ambient glow is achieved entirely with box-shadow — multiple directional
+     * colored shadows approximate the warm/cool gradient of a real LED strip
+     * without creating any GPU compositing layers.
+     */
     .card-peephole-wrap {
       flex-shrink: 0;
       width: 128px;
@@ -39,69 +63,65 @@
       position: relative;
       border-radius: 50%;
       box-shadow:
-        0 0 0 2.5px rgba(255,255,255,0.10),
+        0 0 0 2px rgba(255,255,255,0.10),
         0 0 0 5px rgba(255,255,255,0.04),
         0 4px 12px rgba(0,0,0,0.3);
+      transition: box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     }
+    /* Hover: crisp ring + directional ambient glow via box-shadow only */
+    .project-card:hover .card-peephole-wrap {
+      box-shadow:
+        /* crisp cool-blue ring */
+        0 0 0 2px rgba(140, 205, 255, 0.88),
+        /* ambient glow — cool at top, accent at sides, warm at bottom */
+        0 -12px 20px rgba(212, 238, 255, 0.55),
+        12px   0 20px rgba(110, 182, 255, 0.50),
+        0  12px 20px rgba(255, 190, 100, 0.44),
+        -12px  0 20px rgba(110, 182, 255, 0.50),
+        /* soft overall bloom */
+        0 0 28px rgba(110, 182, 255, 0.22),
+        0 4px 16px rgba(0,0,0,0.4);
+    }
+    /*
+     * Circular image container.
+     * Uses a plain <img> child — <img> is managed by the browser image cache
+     * and repaints reliably even inside backdrop-filter compositing layers.
+     * No isolation: isolate, no background-image, no filter anywhere.
+     *
+     * ::before is removed. The lens ring is folded into ::after as an inset
+     * box-shadow so ::after (which renders after <img> content by spec) is
+     * naturally above the image with zero z-index or stacking-context tricks.
+     */
     .card-peephole {
       position: relative;
       width: 100%;
       height: 100%;
       border-radius: 50%;
       overflow: hidden;
-      clip-path: circle(50%);
-      -webkit-clip-path: circle(50%);
-      isolation: isolate;
-      transform: translateZ(0);
-      -webkit-transform: translateZ(0);
     }
-    .card-peephole img {
+    .peephole-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
-      /* Haze / frosted lens effect on the image itself */
-      filter: blur(1.2px) saturate(0.7) brightness(0.85);
-      transition: filter 0.4s ease;
     }
-    .project-card:hover .card-peephole img {
-      filter: blur(0.4px) saturate(0.9) brightness(0.95);
-    }
-    /* Glass overlay — barrel distortion vignette + specular caustics */
+    /* Glass overlay + lens ring combined — renders above <img> by source order */
     .card-peephole::after {
       content: '';
       position: absolute;
       inset: 0;
       border-radius: 50%;
       background:
-        /* Primary specular highlight — top-left caustic */
         radial-gradient(ellipse 60% 50% at 32% 28%, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.06) 40%, transparent 70%),
-        /* Secondary reflection — bottom-right */
         radial-gradient(ellipse 40% 35% at 70% 72%, rgba(255,255,255,0.10) 0%, transparent 50%),
-        /* Barrel distortion vignette — heavy darkening at edges */
         radial-gradient(circle at 50% 50%, transparent 35%, rgba(0,0,0,0.20) 55%, rgba(0,0,0,0.50) 75%, rgba(0,0,0,0.75) 100%);
       box-shadow:
+        inset 0 0 0 2px rgba(255,255,255,0.10), /* lens housing ring */
         inset 0 0 24px rgba(0,0,0,0.5),
         inset 0 1px 3px rgba(255,255,255,0.18),
         inset 0 -1px 2px rgba(255,255,255,0.05);
       pointer-events: none;
       transition: background 0.4s ease;
-    }
-    /* Lens housing ring */
-    .card-peephole::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.10);
-      z-index: 1;
-      pointer-events: none;
-    }
-    .project-card:hover .card-peephole::after {
-      background:
-        radial-gradient(ellipse 60% 50% at 32% 28%, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.10) 40%, transparent 70%),
-        radial-gradient(ellipse 40% 35% at 70% 72%, rgba(255,255,255,0.14) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.15) 58%, rgba(0,0,0,0.40) 75%, rgba(0,0,0,0.65) 100%);
     }
 
     /* Card layout with peephole — flex row */
@@ -117,6 +137,123 @@
       gap: 16px;
     }
 
+    /* ── Project Chapters ── */
+    .project-chapter {
+      margin-bottom: 64px;
+      scroll-margin-top: 88px;
+    }
+    .chapter-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-left: 2px;
+    }
+    .chapter-num {
+      font-size: 0.625rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      opacity: 0.65;
+      flex-shrink: 0;
+    }
+    .chapter-context {
+      font-size: 0.875rem;
+      color: var(--text-tertiary);
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* ── External projects grid ── */
+    .ext-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    /* ── Left Project Navigator ── */
+    .project-nav-left {
+      position: fixed;
+      left: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .pnl-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.25s;
+      opacity: 0.3;
+    }
+    .pnl-item:hover {
+      opacity: 0.7;
+    }
+    .pnl-item.active {
+      opacity: 1;
+    }
+    .pnl-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--text-secondary);
+      flex-shrink: 0;
+      transition: background 0.25s, width 0.25s, height 0.25s;
+    }
+    .pnl-item.active .pnl-dot {
+      background: var(--accent);
+      width: 7px;
+      height: 7px;
+    }
+    .pnl-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Scroll Reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition:
+        opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.12s; }
+    .reveal-delay-2 { transition-delay: 0.24s; }
+
+    /* ── Hero entrance animation (above fold — CSS, no observer needed) ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero h1 {
+      animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .hero .subtitle {
+      animation: fadeUp 0.9s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1260px) {
+      .project-nav-left { display: none; }
+    }
+    @media (max-width: 768px) {
+      .ext-row { grid-template-columns: 1fr; }
+    }
     @media (max-width: 480px) {
       .card-peephole-wrap {
         width: 96px;
@@ -131,13 +268,33 @@
 
   <nav class="nav">
     <div class="container">
-      <a href="/" class="nav-logo">Benjamin Kase</a>
+      <a href="./" class="nav-logo">Benjamin Kase</a>
       <ul class="nav-links">
-        <li><a href="/">Work</a></li>
-        <li><a href="/about/">About</a></li>
-        <li><a href="/contact/">Contact</a></li>
+        <li><a href="./">Work</a></li>
+        <li><a href="about/">About</a></li>
+        <li><a href="contact/">Contact</a></li>
       </ul>
     </div>
+  </nav>
+
+  <!-- ── Left Project Navigator ── -->
+  <nav class="project-nav-left" aria-label="Jump to project">
+    <a class="pnl-item" href="#chapter-smartstretch" data-chapter="chapter-smartstretch">
+      <span class="pnl-dot"></span>
+      <span class="pnl-label">SmartStretch</span>
+    </a>
+    <a class="pnl-item" href="#chapter-keyboard" data-chapter="chapter-keyboard">
+      <span class="pnl-dot"></span>
+      <span class="pnl-label">Weighted Keyboard</span>
+    </a>
+    <a class="pnl-item" href="#chapter-audit" data-chapter="chapter-audit">
+      <span class="pnl-dot"></span>
+      <span class="pnl-label">Audit Trail</span>
+    </a>
+    <a class="pnl-item" href="#chapter-more" data-chapter="chapter-more">
+      <span class="pnl-dot"></span>
+      <span class="pnl-label">More Work</span>
+    </a>
   </nav>
 
   <header class="hero">
@@ -149,11 +306,15 @@
 
   <main class="section">
     <div class="container">
-      <p class="section-label">Selected Work</p>
+      <p class="section-label reveal">Selected Work</p>
 
-      <div class="project-grid">
-
-        <a href="/smartstretch/" class="project-card glass featured has-peephole">
+      <!-- ── Chapter 01: SmartStretch ── -->
+      <div class="project-chapter" id="chapter-smartstretch">
+        <div class="chapter-header reveal">
+          <span class="chapter-num">01</span>
+          <span class="chapter-context">From skin to screen — a rehabilitation service designed at every layer of the stack</span>
+        </div>
+        <a href="smartstretch/" class="project-card glass featured has-peephole reveal reveal-delay-1">
           <div class="card-content">
             <span class="card-tag">Sensing · watchOS · Service Design · Clinical EHR</span>
             <h3>SmartStretch</h3>
@@ -162,12 +323,19 @@
           </div>
           <div class="card-peephole-wrap">
             <div class="card-peephole">
-              <img src="smartstretch/assets/motion-icon.png" alt="Motion app icon" width="128" height="128">
+              <img class="peephole-img" src="smartstretch/assets/motion-icon.png" alt="Motion app icon" width="128" height="128">
             </div>
           </div>
         </a>
+      </div>
 
-        <a href="/keyboard/" class="project-card glass has-peephole">
+      <!-- ── Chapter 02: Weighted Keyboard ── -->
+      <div class="project-chapter" id="chapter-keyboard">
+        <div class="chapter-header reveal">
+          <span class="chapter-num">02</span>
+          <span class="chapter-context">Physics of touch — 17 years of piano training encoded in sensor geometry and force curves</span>
+        </div>
+        <a href="keyboard/" class="project-card glass has-peephole reveal reveal-delay-1">
           <div class="card-content">
             <span class="card-tag">Hardware · MIDI · Human Factors</span>
             <h3>Weighted Keyboard</h3>
@@ -176,12 +344,19 @@
           </div>
           <div class="card-peephole-wrap">
             <div class="card-peephole">
-              <img src="keyboard/assets/octave-v2.jpeg" alt="Assembled keyboard octave prototype" width="128" height="128">
+              <img class="peephole-img" src="keyboard/assets/octave-v2.jpeg" alt="Assembled keyboard octave prototype" width="128" height="128" loading="eager" decoding="sync">
             </div>
           </div>
         </a>
+      </div>
 
-        <a href="/audit-trail/" class="project-card glass has-peephole">
+      <!-- ── Chapter 03: Audit Trail ── -->
+      <div class="project-chapter" id="chapter-audit">
+        <div class="chapter-header reveal">
+          <span class="chapter-num">03</span>
+          <span class="chapter-context">When accountability means traceability — not publishing reports, but making every dollar traceable through its lifecycle</span>
+        </div>
+        <a href="audit-trail/" class="project-card glass has-peephole reveal reveal-delay-1">
           <div class="card-content">
             <span class="card-tag">Data · Policy · Traceability</span>
             <h3>Audit Trail</h3>
@@ -190,26 +365,34 @@
           </div>
           <div class="card-peephole-wrap">
             <div class="card-peephole">
-              <img src="audit-trail/app/assets/logo.png" alt="Audit Trail logo" width="128" height="128">
+              <img class="peephole-img" src="audit-trail/app/assets/logo.png" alt="Audit Trail logo" width="128" height="128">
             </div>
           </div>
         </a>
-
-        <a href="https://bkase-dotcom.github.io/ACCD-fall-2025/creative-prototyping/week11/Self%20Stock/prototype/index.html" target="_blank" rel="noopener" class="project-card glass external">
-          <span class="card-tag">Computer Vision · ML · Tracking</span>
-          <h3>ML5.js Inventory System</h3>
-          <p>Three-layer CV architecture — COCO-SSD detection, Teachable Machine classification, and centroid tracking for persistent object identity across frames.</p>
-          <span class="card-arrow"><span class="external-badge">External</span> ↗</span>
-        </a>
-
-        <a href="https://bkase-dotcom.github.io/ACCD-fall-2025/creative-prototyping/week8/Ptrns_rthm_mvmt/index.html" target="_blank" rel="noopener" class="project-card glass external">
-          <span class="card-tag">Generative · P5.js · Performance</span>
-          <h3>Flow Field</h3>
-          <p>Real-time generative system with curl noise and vortex dynamics. ~8,000 particles, color mapped to radius of curvature, performance optimized with flat arrays.</p>
-          <span class="card-arrow"><span class="external-badge">External</span> ↗</span>
-        </a>
-
       </div>
+
+      <!-- ── Chapter 04: More Work ── -->
+      <div class="project-chapter" id="chapter-more">
+        <div class="chapter-header reveal">
+          <span class="chapter-num">04</span>
+          <span class="chapter-context">Experiments in computer vision and generative systems</span>
+        </div>
+        <div class="ext-row">
+          <a href="https://bkase-dotcom.github.io/ACCD-fall-2025/creative-prototyping/week11/Self%20Stock/prototype/index.html" target="_blank" rel="noopener" class="project-card glass external reveal">
+            <span class="card-tag">Computer Vision · ML · Tracking</span>
+            <h3>ML5.js Inventory System</h3>
+            <p>Three-layer CV architecture — COCO-SSD detection, Teachable Machine classification, and centroid tracking for persistent object identity across frames.</p>
+            <span class="card-arrow"><span class="external-badge">External</span> ↗</span>
+          </a>
+          <a href="https://bkase-dotcom.github.io/ACCD-fall-2025/creative-prototyping/week8/Ptrns_rthm_mvmt/index.html" target="_blank" rel="noopener" class="project-card glass external reveal reveal-delay-1">
+            <span class="card-tag">Generative · P5.js · Performance</span>
+            <h3>Flow Field</h3>
+            <p>Real-time generative system with curl noise and vortex dynamics. ~8,000 particles, color mapped to radius of curvature, performance optimized with flat arrays.</p>
+            <span class="card-arrow"><span class="external-badge">External</span> ↗</span>
+          </a>
+        </div>
+      </div>
+
     </div>
   </main>
 
@@ -218,6 +401,65 @@
       <p>Benjamin Kase · 2026</p>
     </div>
   </footer>
+
+  <script>
+    // ── Scroll reveal ──
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ── Left nav active state ──
+    // Fires when a chapter enters the "active zone": top 20%–70% of viewport
+    const navItems = document.querySelectorAll('.pnl-item');
+
+    const chapterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navItems.forEach(item => {
+            item.classList.toggle('active', item.dataset.chapter === entry.target.id);
+          });
+        }
+      });
+    }, {
+      rootMargin: '-18% 0px -58% 0px',
+      threshold: 0
+    });
+
+    document.querySelectorAll('.project-chapter').forEach(ch => chapterObserver.observe(ch));
+
+    // ── Smooth scroll for left nav clicks ──
+    navItems.forEach(item => {
+      item.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.getElementById(item.dataset.chapter);
+        if (target) {
+          const top = target.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // ── bfcache safety net ──
+    // When a page is restored from the browser's back-forward cache, GPU
+    // textures may have been evicted. Force a src re-assignment so the
+    // browser repaints the image from the already-in-memory data URL.
+    window.addEventListener('pageshow', e => {
+      if (e.persisted) {
+        document.querySelectorAll('.peephole-img').forEach(img => {
+          const src = img.src;
+          img.src = '';
+          requestAnimationFrame(() => { img.src = src; });
+        });
+      }
+    });
+  </script>
 
 </body>
 </html>
